@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Inversión - Efecto Bola de Nieve</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+        h1 { margin-top: 20px; }
+        .chart-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 20px; 
+        }
+        .bar-chart { 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 5px; 
+            height: 400px; 
+            width: 90%; 
+            max-width: 1000px; 
+            border-left: 2px solid #333; 
+            border-bottom: 2px solid #333; 
+            padding: 10px; 
+            position: relative;
+        }
+        .bar {
+            width: 20px;
+            background-color: #4CAF50;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .bar:hover {
+            background-color: #45a049;
+        }
+        .bar-label { 
+            text-align: center; 
+            margin-top: 5px; 
+            font-size: 12px;
+        }
+        .info-container { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Simulación de Inversión - Efecto Bola de Nieve</h1>
+    <div class="chart-container">
+        <div id="barChart" class="bar-chart"></div>
+    </div>
+    <div id="infoContainer" class="info-container">
+        <h2 id="dateTitle"></h2>
+        <p id="capitalAmount"></p>
+    </div>
+
+    <script>
+        const barChart = document.getElementById('barChart');
+        const dateTitle = document.getElementById('dateTitle');
+        const capitalAmount = document.getElementById('capitalAmount');
+
+        // Configuración de la simulación
+        let initialCapital = 1000; // Capital inicial
+        const dailyGrowthRate = 1.01; // Tasa de crecimiento diaria (1% de interés compuesto)
+        const today = new Date();
+        const endDate = new Date(today.getFullYear(), 11, 20); // 20 de diciembre
+        let currentDate = new Date(today);
+        let dayCounter = 0;
+
+        // Generar la gráfica de barras para cada día desde hoy hasta el 20 de diciembre
+        while (currentDate <= endDate) {
+            // Calcular el capital para el día actual
+            const capital = initialCapital * Math.pow(dailyGrowthRate, dayCounter);
+            dayCounter++;
+
+            // Crear la barra
+            const bar = document.createElement('div');
+            bar.classList.add('bar');
+            bar.style.height = `${Math.min(100, capital / 50)}%`; // Escalar la altura para que se ajuste al contenedor
+            bar.title = `Capital para ${currentDate.toLocaleDateString()}: $${capital.toFixed(2)}`;
+
+            // Evento de clic para mostrar detalles
+            bar.onclick = () => {
+                dateTitle.innerText = `Fecha: ${currentDate.toLocaleDateString()}`;
+                capitalAmount.innerText = `Capital acumulado: $${capital.toFixed(2)}`;
+            };
+
+            // Crear etiqueta de fecha debajo de cada barra
+            const barLabel = document.createElement('div');
+            barLabel.classList.add('bar-label');
+            barLabel.innerText = currentDate.getDate();
+
+            // Contenedor de la barra y etiqueta
+            const barContainer = document.createElement('div');
+            barContainer.appendChild(bar);
+            barContainer.appendChild(barLabel);
+            barChart.appendChild(barContainer);
+
+            // Incrementar un día
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    </script>
+</body>
+</html>
